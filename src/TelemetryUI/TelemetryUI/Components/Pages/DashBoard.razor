@@ -1,0 +1,110 @@
+@page "/dashboard"
+
+@using Radzen
+@using Radzen.Blazor
+@rendermode InteractiveServer
+
+
+<div class="container mx-auto px-4 fade-in bg-gray-100 rounded-xl p-8 shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Speed Half Pie Chart -->
+        <div class="dashboard-card bg-white rounded-lg shadow-lg p-6 hover:bg-gray-50">
+            <div class="icon-container"><i class="fas fa-tachometer-alt"></i></div>
+            <h5 class="text-xl font-semibold mb-4">Speed</h5>
+            <RadzenArcGauge class="w-full h-64">
+                <RadzenArcGaugeScale Step="20" Min="0" Max="200" StartAngle="0" EndAngle="180">
+                    <RadzenArcGaugeScaleValue Value="@currentSpeed" ShowValue="true">
+                        <Template Context="value">
+                            @value.Value km/h
+                        </Template>
+                    </RadzenArcGaugeScaleValue>
+                </RadzenArcGaugeScale>
+            </RadzenArcGauge>
+        </div>
+
+        <!-- Temperature Half Pie Chart -->
+        <div class="dashboard-card bg-white rounded-lg shadow-lg p-6 hover:bg-gray-50">
+            <div class="icon-container"><i class="fas fa-thermometer-half"></i></div>
+            <h5 class="text-xl font-semibold mb-4">Temperature</h5>
+            <RadzenArcGauge class="w-full h-64">
+                <RadzenArcGaugeScale Step="20" Min="0" Max="120" StartAngle="0" EndAngle="180">
+                    <RadzenArcGaugeScaleValue Value="@temperature" ShowValue="true">
+                        <Template Context="value">
+                            @value.Value °C
+                        </Template>
+                    </RadzenArcGaugeScaleValue>
+                </RadzenArcGaugeScale>
+            </RadzenArcGauge>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Battery Info -->
+        <div class="dashboard-card bg-white rounded-lg shadow-lg p-6 hover:bg-gray-50">
+            <div class="icon-container"><i class="fas fa-battery-three-quarters"></i></div>
+            <h5 class="text-xl font-semibold mb-4">Battery Status</h5>
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-gray-600">Voltage:</span>
+                <span class="font-medium">@batteryVoltage V</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Current:</span>
+                <span class="font-medium">@batteryCurrent A</span>
+            </div>
+        </div>
+
+        <!-- RPM/Engine Load -->
+        <div class="dashboard-card bg-white rounded-lg shadow-lg p-6 hover:bg-gray-50">
+            <div class="icon-container"><i class="fas fa-cogs"></i></div>
+            <h5 class="text-xl font-semibold mb-4">Engine Status</h5>
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-gray-600">RPM:</span>
+                <span class="font-medium">@rpm</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600">Engine Load:</span>
+                <span class="font-medium">@engineLoad%</span>
+            </div>
+        </div>
+
+        <!-- Error/Status Codes -->
+        <div class="dashboard-card bg-white rounded-lg shadow-lg p-6 hover:bg-gray-50">
+            <div class="icon-container"><i class="fas fa-server"></i></div>
+            <h5 class="text-xl font-semibold mb-4">System Status</h5>
+            <div class="@(hasError ? "text-red-600" : "text-green-600")">
+                <strong>Status Code:</strong> @statusCode
+            </div>
+            @if (hasError)
+            {
+                <div class="text-red-600 mt-3">
+                    <strong>Error Message:</strong> @errorMessage
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private double currentSpeed = 0;
+    private double temperature = 0;
+    private double batteryVoltage = 0;
+    private double batteryCurrent = 0;
+    private int rpm = 0;
+    private int engineLoad = 0;
+    private string statusCode = "OK";
+    private string errorMessage = "";
+    private bool hasError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulated data - replace with actual data source
+        currentSpeed = 75;
+        temperature = 65;
+        batteryVoltage = 12.6;
+        batteryCurrent = 2.5;
+        rpm = 3500;
+        engineLoad = 45;
+        statusCode = "200";
+        hasError = false;
+    }
+}

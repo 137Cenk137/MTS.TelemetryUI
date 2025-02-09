@@ -1,0 +1,24 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Web
+@using TelemetryUI.Components
+@namespace TelemetryUI.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="TelemetryUI.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/charts.js"></script>
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+</head>
+<body>
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>

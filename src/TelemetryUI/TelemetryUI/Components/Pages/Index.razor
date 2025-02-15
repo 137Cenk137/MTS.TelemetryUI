@@ -1,0 +1,36 @@
+@page "/index"
+@using TelemetryUI.DTO
+@inject TelemetryService TelemetryService
+
+<h3>Car Telemetry Dashboard (Index)</h3>
+<p>@formattedTelemetry</p>
+
+@code {
+    private string formattedTelemetry = "Waiting for data...";
+
+    protected override void OnInitialized()
+    {
+        // Update with the latest telemetry if available
+        formattedTelemetry = FormatTelemetry(TelemetryService.LatestTelemetry);
+        // Subscribe to telemetry updates
+        TelemetryService.OnTelemetryReceived += UpdateTelemetry;
+    }
+
+    private void UpdateTelemetry(TelemetryDTO telemetry)
+    {
+        formattedTelemetry = FormatTelemetry(telemetry);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string FormatTelemetry(TelemetryDTO telemetry)
+    {
+        return $"Time: {telemetry.Time}, Speed: {telemetry.Speed}, " +
+               $"Battery Temp: {telemetry.BatteryTemperature}, Tank Temp: {telemetry.tankSicaklik}, " +
+               $"Voltage: {telemetry.bataryaGerilim}, Energy: {telemetry.kalanEnerji}";
+    }
+
+    public void Dispose()
+    {
+        TelemetryService.OnTelemetryReceived -= UpdateTelemetry;
+    }
+}

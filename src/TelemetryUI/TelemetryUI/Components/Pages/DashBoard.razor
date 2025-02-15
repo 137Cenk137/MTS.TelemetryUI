@@ -1,9 +1,9 @@
 @page "/dashboard"
-
 @using Radzen
 @using Radzen.Blazor
+@using TelemetryUI.DTO
+@inject TelemetryService TelemetryService
 @rendermode InteractiveServer
-
 
 <div class="container mx-auto px-4 fade-in bg-gray-100 rounded-xl p-8 shadow-sm">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -85,6 +85,7 @@
 </div>
 
 @code {
+    // Dashboard values updated from TelemetryService
     private double currentSpeed = 0;
     private double temperature = 0;
     private double batteryVoltage = 0;
@@ -95,16 +96,28 @@
     private string errorMessage = "";
     private bool hasError = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // Simulated data - replace with actual data source
-        currentSpeed = 75;
-        temperature = 65;
-        batteryVoltage = 12.6;
-        batteryCurrent = 2.5;
-        rpm = 3500;
-        engineLoad = 45;
-        statusCode = "200";
-        hasError = false;
+        // Subscribe to telemetry updates
+        TelemetryService.OnTelemetryReceived += UpdateTelemetry;
+        // Optionally, update with the latest telemetry if available
+        UpdateTelemetry(TelemetryService.LatestTelemetry);
+    }
+
+    private void UpdateTelemetry(TelemetryDTO telemetry)
+    {
+        currentSpeed = telemetry.Speed;
+        temperature = telemetry.BatteryTemperature; // or telemetry.tankSicaklik if desired
+        batteryVoltage = telemetry.bataryaGerilim;
+        batteryCurrent = telemetry.kalanEnerji;
+        rpm = 3500; // example simulated value
+        engineLoad = 45; // example simulated value
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        TelemetryService.OnTelemetryReceived -= UpdateTelemetry;
     }
 }

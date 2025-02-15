@@ -1,12 +1,12 @@
 using ApexCharts;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebSockets;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using TelemetryUI.Client.Pages;
 using TelemetryUI.Components;
-using TelemetryUI.Components.Account;
-using TelemetryUI.Data;
+using TelemetryUI.Entityframework.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +20,24 @@ builder.Services.AddApexCharts();
 
 builder.Services.AddRadzenComponents();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+builder.Services.AddSingleton(provider => 
+{
+   // var dbContext = provider.GetRequiredService<TelemetryDbContext>();
+    var logger = provider.GetRequiredService<ILogger<TelemetryService>>();
+    var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
+
+    return new TelemetryService(
+        logger,
+        scopeFactory,
+        portName: "/dev/cu.usbserial-130",
+        baundName: 9600
+    );
+});
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -31,17 +45,10 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+
+builder.Services.AddDbContext<TelemetryDbContext>(opt => opt.UseSqlite("Data Source=./TelemetryDbContext.db"));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
@@ -70,6 +77,6 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(TelemetryUI.Client._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
+
 
 app.Run();

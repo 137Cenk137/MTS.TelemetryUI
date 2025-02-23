@@ -16,6 +16,8 @@
     <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageReference Include="Radzen.Blazor" Version="5.9.8" />
     <PackageReference Include="System.IO.Ports" Version="9.0.1" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+
     <ProjectReference Include="..\TelemetryUI.Client\TelemetryUI.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0" />

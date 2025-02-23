@@ -1,10 +1,7 @@
 using ApexCharts;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebSockets;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
-using TelemetryUI.Client.Pages;
 using TelemetryUI.Components;
 using TelemetryUI.Entityframework.Context;
 
@@ -17,7 +14,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 builder.Services.AddApexCharts();
-
+builder.Services.AddSingleton<FileService>();
 builder.Services.AddRadzenComponents();
 builder.Services.AddCascadingAuthenticationState();
 
@@ -27,14 +24,14 @@ builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 builder.Services.AddSingleton(provider => 
 {
-   // var dbContext = provider.GetRequiredService<TelemetryDbContext>();
+   //var dbContext = provider.GetRequiredService<TelemetryDbContext>();
     var logger = provider.GetRequiredService<ILogger<TelemetryService>>();
     var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
 
     return new TelemetryService(
         logger,
         scopeFactory,
-        portName: "/dev/cu.usbserial-130",
+        portName: "/dev/cu.usbserial-1140",
         baundName: 9600
     );
 });

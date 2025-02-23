@@ -47,6 +47,10 @@
                 <span class="text-gray-600">Voltage:</span>
                 <span class="font-medium">@batteryVoltage V</span>
             </div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-gray-600">Tank Temperature:</span>
+                <span class="font-medium">@tankTemperature °C</span>
+            </div>
             <div class="flex justify-between items-center">
                 <span class="text-gray-600">Current:</span>
                 <span class="font-medium">@batteryCurrent A</span>
@@ -90,6 +94,7 @@
     private double temperature = 0;
     private double batteryVoltage = 0;
     private double batteryCurrent = 0;
+    private double tankTemperature = 0;
     private int rpm = 0;
     private int engineLoad = 0;
     private string statusCode = "OK";
@@ -106,6 +111,7 @@
 
     private void UpdateTelemetry(TelemetryDTO telemetry)
     {
+        tankTemperature = telemetry.tankSicaklik;
         currentSpeed = telemetry.Speed;
         temperature = telemetry.BatteryTemperature; // or telemetry.tankSicaklik if desired
         batteryVoltage = telemetry.bataryaGerilim;

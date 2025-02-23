@@ -1,6 +1,7 @@
 using System;
 using System.IO.Ports;
 using System.Text.Json;
+using CsvHelper.Configuration;
 using TelemetryUI.DTO;
 using TelemetryUI.Entities;
 using TelemetryUI.Entityframework.Context;
@@ -22,8 +23,7 @@ public class TelemetryService : IDisposable
     public TelemetryService(ILogger<TelemetryService> logger, IServiceScopeFactory scopeFactory, string portName, int baundName = 9600)
     {
         _scopeFactory = scopeFactory;
-        _serialPort = new SerialPort(portName, baundName)
-        {
+        _serialPort = new SerialPort(portName, baundName){
             ReadTimeout = 1000,
             NewLine = "\n"
         };
@@ -45,9 +45,9 @@ public class TelemetryService : IDisposable
             LatestTelemetry = telemetryData;
             OnTelemetryReceived?.Invoke(telemetryData);
 
-            // Save telemetry data to the database using a scoped DbContext:
             using (var scope = _scopeFactory.CreateScope())
             {
+                var fileService = scope.ServiceProvider.GetRequiredService<FileService>();
                 var dbContext = scope.ServiceProvider.GetRequiredService<TelemetryDbContext>();
                 await dbContext.Telemetries.AddAsync(new Telemetry
                 {
@@ -60,6 +60,7 @@ public class TelemetryService : IDisposable
                     CreatedAt = telemetryData.Time.ToString()
                 });
                 await dbContext.SaveChangesAsync();
+                fileService.SaveRow($"{telemetryData.Time},{telemetryData.Speed},{telemetryData.BatteryTemperature},{telemetryData.tankSicaklik},{telemetryData.bataryaGerilim},{telemetryData.kalanEnerji}");
             }
         }
         catch (Exception ex)

@@ -13,7 +13,6 @@ public class FileService
     public FileService(ILogger<FileService> logger)
     {
         _logger = logger;
-        // Create a unique file name based on the current UTC date/time.
         _filePath = Path.Combine(AppContext.BaseDirectory, $"{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}-TelemetryData.csv");
         if(!File.Exists(_filePath)){
                 CreateOrOverwriteCsvFile();
@@ -26,7 +25,6 @@ public class FileService
         {
             using (var writer = new StreamWriter(_filePath, false))
             {
-                // Write CSV header row. Adjust headers as needed.
                 writer.WriteLine("Time,Speed,BatteryTemperature,TankTemperature,BatteryVoltage,BatteryRate");
             }
             _logger.LogInformation($"CSV file created/overwritten at {_filePath}");
